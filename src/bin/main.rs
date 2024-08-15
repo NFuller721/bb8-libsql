@@ -1,5 +1,5 @@
 use std::{env, error::Error};
-use r2d2_libsql::LibsqlConnectionManager;
+use bb8_libsql::LibsqlConnectionManager;
 
 use dotenvy::dotenv;
 

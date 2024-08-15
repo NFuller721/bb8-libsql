@@ -1,0 +1,13 @@
+[package]
+name = "bb8-libsql"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-trait = "0.1.81"
+bb8 = "0.8.5"
+dotenvy = "0.15.7"
+libsql = "0.5.0"
+tokio = "1.39.2"

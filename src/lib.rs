@@ -39,36 +39,6 @@
 //!  
 //!     Ok(())
 //! }
-
- 
- 
-
- 
- 
-
- 
- 
- 
- 
- 
- 
- 
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
 //! ```
 pub use libsql;
 use async_trait::async_trait;

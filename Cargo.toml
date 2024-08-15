@@ -1,7 +1,14 @@
 [package]
 name = "bb8-libsql"
 version = "0.1.0"
-edition = "2021"
+license = "MIT"
+authors = [
+  "Noah Fuller <nfuller7218@gmail.com>",
+]
+description = "A simple connection pooling manager for libsql using bb8."
+repository = "https://github.com/NFuller721/bb88-libsql"
+keywords = ["sqlite", "bb8", "pool"]
+edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -46,7 +46,7 @@ use libsql::Connection;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
-mod errors;
+pub mod errors;
 
 #[derive(Debug, Clone)]
 enum Source {

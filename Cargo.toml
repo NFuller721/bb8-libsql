@@ -1,6 +1,6 @@
 [package]
 name = "bb8-libsql"
-version = "0.1.1"
+version = "0.1.2"
 license = "MIT"
 authors = [
   "Noah Fuller <nfuller7218@gmail.com>",

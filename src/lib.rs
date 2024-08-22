@@ -45,6 +45,7 @@ use async_trait::async_trait;
 use libsql::Connection;
 use std::fmt;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 pub mod errors;
 
@@ -53,7 +54,7 @@ enum Source {
     Local(PathBuf),
     Remote(String, String),
     LocalReplica(PathBuf),
-    RemoteReplica(PathBuf, String, String),
+    RemoteReplica(PathBuf, String, String, Duration),
 }
 
 /// An `bb8::ManageConnection` for `libsql::Connection`s.
@@ -101,12 +102,13 @@ impl LibsqlConnectionManager {
 
     /// Creates a new `LibsqlConnectionManager` from remote replica.
     /// See `libsql::Builder::new_remote_replica`
-    pub fn remote_replica<P: AsRef<Path>>(path: P, url: &str, token: &str) -> Self {
+    pub fn remote_replica<P: AsRef<Path>>(path: P, url: &str, token: &str, sync_interval: Duration) -> Self {
         Self {
             source: Source::RemoteReplica(
                 path.as_ref().to_path_buf(),
                 url.to_string(),
                 token.to_string(),
+                sync_interval
             ),
         }
     }
@@ -134,8 +136,9 @@ impl bb8::ManageConnection for LibsqlConnectionManager {
                     .build().await
                     .and_then(|builder| builder.connect())
             },
-            Source::RemoteReplica(path, url, token) => {
+            Source::RemoteReplica(path, url, token, sync_interval) => {
                 libsql::Builder::new_remote_replica(path, url.to_string(), token.to_string())
+                    .sync_interval(sync_interval.clone())
                     .build().await
                     .and_then(|builder| builder.connect())
             },

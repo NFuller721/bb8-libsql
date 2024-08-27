@@ -1,5 +1,8 @@
-use std::{env, error::Error};
-use bb8_libsql::LibsqlConnectionManager;
+use std::env;
+use std::error::Error;
+use std::path::PathBuf;
+use std::str::FromStr;
+use std::time::Duration;
 
 use dotenvy::dotenv;
 
@@ -9,8 +12,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let url = env::var("LIBSQL_CLIENT_URL").unwrap();
     let token = env::var("LIBSQL_CLIENT_TOKEN").unwrap();
+    let extension_dir = env::var("EXTENSION_DIR").unwrap();
 
-    let manager = LibsqlConnectionManager::remote(&url, &token);
+    let manager = bb8_libsql::LibsqlConnectionManager::new_remote_replica(&PathBuf::from_str("sync.db")?, &url, &token)
+        .sync_interval(&Duration::from_secs(60))
+        .extensions(&vec![
+            PathBuf::from_str(&format!("{}/crypto.dylib", extension_dir))?,
+            PathBuf::from_str(&format!("{}/uuid.dylib", extension_dir))?,
+        ])
+        .clone();
+
     let pool = bb8::Pool::builder()
         .max_size(15)
         .build(manager)
@@ -18,13 +29,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .unwrap();
 
     let conn = pool.get().await?;
-    let mut rows = conn.query("SELECT 1;", ()).await?;
+    let value = conn.query("SELECT uuid4();", ()).await?
+        .next().await?
+        .expect("Row not found.")
+        .get::<String>(0)?;
 
-    let value_found = rows.next().await?
-        .map(|row| row.get::<u64>(0))
-        .transpose()?;
-
-    dbg!(value_found);
+    dbg!(value);
 
     Ok(())
 }
